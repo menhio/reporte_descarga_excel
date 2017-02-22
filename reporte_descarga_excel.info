@@ -1,0 +1,6 @@
+name = Reporte de Descarga - Action Rule
+description = "Action Rule para generar el reporte de descarga en Excel."
+package = Mazpesca
+core = 7.x
+dependencies[] = rules
+dependencies[] = rules_admin
