@@ -93,6 +93,37 @@ function pescadoRechazo($nid, $field) {
   return $results[0]->$field;
 }
 
+function fechasTurnos($nid, $row, $field) {
+  $query = db_select('fechas_turnos_view', 'd');
+  $query->addField('d', $field, $field);
+  $query->addField('d', 'barco_viaje_nid', 'barco_viaje_nid');
+  $query->condition('d.barco_viaje_nid', $nid, '=');
+  $exeResults = $query->execute();
+  $results = $exeResults->fetchAll();
+
+  return $results[$row]->$field;
+}
+
+function descargaPorTurno($nid, $row, $field, $table) {
+  $query = db_select($table, 'd');
+  $query->addField('d', $field, $field);
+  $query->addField('d', 'barco_viaje_nid', 'barco_viaje_nid');
+  $query->addField('d', 'fecha', 'fecha');
+  $query->condition('d.barco_viaje_nid', $nid, '=');
+  $query->orderBy('fecha');
+  $exeResults = $query->execute();
+  $results = $exeResults->fetchAll();
+
+  return $results[$row]->$field;
+}
+
+function countTableRows($table) {
+  $query = db_select($table, 'd');
+  //$query->addField('d', 'eid', 'eid');
+  $num_rows = $query->countQuery()->execute()->fetchField();
+  return $num_rows;
+}
+
 /*
  * Action function for reporte_descarga_action
  */
@@ -105,22 +136,152 @@ function reporte_descarga_action($account, $nodes) {
   include_once(libraries_get_path('PHPExcel1_8') . '/PHPExcel.php');
   $objPHPExcel = PHPExcel_IOFactory::load("sites/default/files/reporte_descarga_final_tem.xlsx");
   $active_sheet = $objPHPExcel->getActiveSheet();
-  
+  $active_sheet->getSheetView()->setView(PHPExcel_Worksheet_SheetView::SHEETVIEW_NORMAL);
   $objDrawing = new PHPExcel_Worksheet_Drawing();
-  $objDrawing->setName('Green Bar');
-  $objDrawing->setDescription('Green Bar');
-  $objDrawing->setPath('sites/default/files/green_bar.png');
-  $objDrawing->setWidth(1250);
-  $objDrawing->setCoordinates('B5');
+  $objDrawing->setName('Logo');
+  $objDrawing->setDescription('Logo');
+  $objDrawing->setPath('sites/default/files/logo_excel.png');
+  $objDrawing->setOffsetX(160);                      
+  $objDrawing->setOffsetY(10);
+  $objDrawing->setWidth(237.35);
+  $objDrawing->setHeight(58.58); 
   $objDrawing->setWorksheet($active_sheet);
   
   $objDrawing2 = new PHPExcel_Worksheet_Drawing();
   $objDrawing2->setName('Green Bar');
   $objDrawing2->setDescription('Green Bar');
   $objDrawing2->setPath('sites/default/files/green_bar.png');
-  $objDrawing2->setWidth(1250);
-  $objDrawing2->setCoordinates('B11');
+  $objDrawing2->setHeight(16.62); 
+  $objDrawing2->setWidth(1360);
+  $objDrawing2->setCoordinates('B5');
   $objDrawing2->setWorksheet($active_sheet);
+  
+  $objDrawing3 = new PHPExcel_Worksheet_Drawing();
+  $objDrawing3->setName('Green Bar');
+  $objDrawing3->setDescription('Green Bar');
+  $objDrawing3->setPath('sites/default/files/green_bar.png');
+  $objDrawing3->setHeight(16.62);
+  $objDrawing3->setWidth(1360);
+  $objDrawing3->setCoordinates('B11');
+  $objDrawing3->setWorksheet($active_sheet);
+  
+  $objDrawing4 = new PHPExcel_Worksheet_Drawing();
+  $objDrawing4->setName('Green Bar');
+  $objDrawing4->setDescription('Green Bar');
+  $objDrawing4->setPath('sites/default/files/green_bar.png');
+  $objDrawing4->setHeight(16.62);
+  $objDrawing4->setWidth(1360);
+  $objDrawing4->setCoordinates('B48');
+  $objDrawing4->setWorksheet($active_sheet);
+  
+  $objDrawing5 = new PHPExcel_Worksheet_Drawing();
+  $objDrawing5->setName('Green Bar');
+  $objDrawing5->setDescription('Green Bar');
+  $objDrawing5->setPath('sites/default/files/green_bar.png');
+  $objDrawing5->setHeight(16.62);
+  $objDrawing5->setWidth(1360);
+  $objDrawing5->setCoordinates('B66');
+  $objDrawing5->setWorksheet($active_sheet);
+  
+  $objDrawing6 = new PHPExcel_Worksheet_Drawing();
+  $objDrawing6->setName('Green Bar');
+  $objDrawing6->setDescription('Green Bar');
+  $objDrawing6->setPath('sites/default/files/green_bar.png');
+  $objDrawing6->setHeight(16.62);
+  $objDrawing6->setWidth(1360);
+  $objDrawing6->setCoordinates('B94');
+  $objDrawing6->setWorksheet($active_sheet);
+  
+  $objDrawing7 = new PHPExcel_Worksheet_Drawing();
+  $objDrawing7->setName('Green Bar');
+  $objDrawing7->setDescription('Green Bar');
+  $objDrawing7->setPath('sites/default/files/green_bar.png');
+  $objDrawing7->setHeight(16.62);
+  $objDrawing7->setWidth(1360);
+  $objDrawing7->setCoordinates('B103');
+  $objDrawing7->setWorksheet($active_sheet);
+  
+  $objDrawing8 = new PHPExcel_Worksheet_Drawing();
+  $objDrawing8->setName('Green Bar');
+  $objDrawing8->setDescription('Green Bar');
+  $objDrawing8->setPath('sites/default/files/green_bar.png');
+  $objDrawing8->setHeight(16.62);
+  $objDrawing8->setWidth(1360);
+  $objDrawing8->setCoordinates('B48');
+  $objDrawing8->setWorksheet($active_sheet);
+  
+  /*
+   * Cascos
+   */
+  function createCasco($w, $y, $x, $coord, $active_sheet, $image) {
+    $casco1 = new PHPExcel_Worksheet_Drawing();
+    $casco1->setName('Casco');
+    $casco1->setDescription('Casco');
+    $casco1->setPath($image);
+    //$casco1->setHeight(16.62);
+    $casco1->setWidth($w);
+    $casco1->setOffsetY($y);                      
+    $casco1->setOffsetX($x);                      
+    $casco1->setCoordinates($coord);
+    $casco1->setWorksheet($active_sheet);
+  }
+  
+  createCasco(138, 10, 161, 'D68', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'D82', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 10, 159, 'L68', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'L82', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 10, 160, 'S68', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'S82', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'A106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'A121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'E106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'E121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'I106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'I121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'M106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'M121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'Q106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'Q121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'U106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'U121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'Y106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'Y121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'AC106', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'AC121', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'A124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'A139', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'E124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'E139', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'I124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'I139', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'M124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'M139', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'Q124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'Q139', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'U124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'U139', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'Y124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'Y139', $active_sheet, 'sites/default/files/casco_back.png');
+  
+  createCasco(138, 0, 159, 'AC124', $active_sheet, 'sites/default/files/casco.png');
+  createCasco(138, 0, 159, 'AC139', $active_sheet, 'sites/default/files/casco_back.png');
   
   /*
    * Excel Data
@@ -203,6 +364,76 @@ function reporte_descarga_action($account, $nodes) {
   $active_sheet->setCellValue('Z42', pescadoRechazo($nid, 'fauna_recha'));
   //$active_sheet->setCellValue('Z43', pescado2daCalidad($nid, 'mal_olor_cal2'));
   /*
+   * Fechas de los turnos
+   */
+  $col = 53;
+  for ($i = 0; $i < countTableRows('fechas_turnos_view'); $i++) {
+    $fecha_turno = new DateTime(fechasTurnos($nid, $i, 'fecha'));
+    $dia_turno = $fecha_turno->format('d');
+    $mes_turno = substr($meses[$fecha_turno->format('n') - 1], 0, 3);
+    $active_sheet->setCellValue('A' . $col, $dia_turno . '-' . $mes_turno);
+    $col++;
+  }
+  /*
+   * Primer Turno
+   */
+  $col = 53;
+  for ($i = 0; $i < countTableRows('descarga_primer_turno_view'); $i++) {
+    $active_sheet->setCellValue('C' . $col, descargaPorTurno($nid, $i, 
+        'toneladas', 'descarga_primer_turno_view'));
+    $col++;
+  }
+  /*
+   * Segundo Turno
+   */
+  $col = 53;
+  for ($i = 0; $i < countTableRows('descarga_segundo_turno_view'); $i++) {
+    $active_sheet->setCellValue('F' . $col, descargaPorTurno($nid, $i, 
+        'toneladas', 'descarga_segundo_turno_view'));
+    $col++;
+  }
+  /*
+   * Tercer Turno
+   */
+  $col = 53;
+  for ($i = 0; $i < countTableRows('descarga_tercer_turno_view'); $i++) {
+    $active_sheet->setCellValue('I' . $col, descargaPorTurno($nid, $i, 
+        'toneladas', 'descarga_tercer_turno_view'));
+    $col++;
+  }
+  /*
+   * Charts
+   */
+  /* Labels */
+  $sheetTitle = $active_sheet->getTitle();
+  $dsl = array(
+    new PHPExcel_Chart_DataSeriesValues('String', '', NULL, 1),
+  );
+  /* X Axis Value Label */
+  $xsl = array(
+    new PHPExcel_Chart_DataSeriesValues('String', "'" . $sheetTitle . "'" . '!$K$16:$K$31', NULL, 90)
+  );
+  /* Data Series Values */
+  $dsv = array(
+    new PHPExcel_Chart_DataSeriesValues('Number', "'" . $sheetTitle . "'" . '!$W$16:$W$31', NULL, 90)
+  );
+  $ds = new PHPExcel_Chart_DataSeries(
+      PHPExcel_Chart_DataSeries::TYPE_BARCHART, 
+      PHPExcel_Chart_DataSeries::GROUPING_STANDARD,
+      range(0, count($dsv)-1),
+      $dsl, $xsl, $dsv
+  );
+  $ds->setPlotDirection(PHPExcel_Chart_DataSeries::DIRECTION_COL);
+  
+  $pa=new PHPExcel_Chart_PlotArea(NULL, array($ds));
+  $legend=new PHPExcel_Chart_Legend(\PHPExcel_Chart_Legend::POSITION_RIGHT, 
+      NULL, false);
+  $title=new PHPExcel_Chart_Title('CLASIFICACIÓN GENERAL DEL PESCADO');
+  $chart= new PHPExcel_Chart('chart1', $title, $legend, $pa, true, 0, NULL, NULL);
+  $chart->setTopLeftPosition('Q84');
+  $chart->setBottomRightPosition('AF92');
+  $active_sheet->addChart($chart);
+  /*
    * Excel output metadata
    */
   header('Content-Type: application/vnd.ms-excel');
@@ -216,7 +447,7 @@ function reporte_descarga_action($account, $nodes) {
   header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
   header ('Pragma: public'); // HTTP/1.0
   $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-  //$objWriter->setIncludeCharts(TRUE);
+  $objWriter->setIncludeCharts(TRUE);
   $objWriter->save('php://output');
   exit;
   
